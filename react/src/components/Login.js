@@ -27,7 +27,8 @@ export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))
             .then((user) => {
                 setId(user.user._id);
                 setTasks(user.user.tasks);
-                console.log(user);
+                localStorage.setItem('user','Bearer '+user.token)
+                console.log(typeof(user.token) );
                 history.push('/tasks');
             })
             .catch(err => {

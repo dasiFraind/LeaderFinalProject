@@ -24,9 +24,10 @@ export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))
             body: JSON.stringify(data)
         })
             .then(res => res.json())
-            .then((user) => {
-                setId(user.user._id);
-                console.log(user);
+            .then((data) => {
+                setId(data.user._id);
+                localStorage.setItem('user',data.token)
+                console.log("token: ",data.token," user: ",data.user);
                 history.push('/tasks');
             })
             .catch(err => console.log(err))

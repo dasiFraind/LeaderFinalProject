@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { actions } from '../Redux/Store/actions';
-import { Link } from 'react-router-dom';
+import { Link,withRouter } from 'react-router-dom';
 import Task from './Task'
 function mapStateToProps(state) {
     return {
@@ -16,14 +16,24 @@ const mapDispatchToProps = (dispatch) => ({
     setTasks: (tasks) => dispatch(actions.setTasks(tasks)),
     setTaskInArr: (task) => dispatch(actions.setTaskInArr(task))
 })
-export default connect(mapStateToProps, mapDispatchToProps)(function Tasks(props) {
-    const { user, task, addTask, setTask, deleteTask, setTasks, setTaskInArr } = props;
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(function Tasks(props) {
+    const { user, task, addTask, setTask, deleteTask, setTasks, setTaskInArr,history } = props;
     useEffect(() => {
+        let token = localStorage.getItem('user');
+        console.log("token: ", token)
         fetch(`http://localhost:3001/getTasksToUser/${user.id}`, {
             method: "get",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization":token
+            },
         })
-            .then(res => res.json())
+            .then((res) => {
+                console.log(res.status);
+                if (res.status === 401)
+                history.push('/error');
+                res.json()
+            })
             .then((data) => {
                 setTasks(data.user.tasks);
             })
@@ -108,4 +118,4 @@ export default connect(mapStateToProps, mapDispatchToProps)(function Tasks(props
                 <p>there are no tasks to user: {user.name}</p>}
         </>
     )
-})
+}))
