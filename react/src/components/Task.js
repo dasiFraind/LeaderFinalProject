@@ -11,10 +11,9 @@ const mapDispatchToProps = (dispatch) => ({
     setUserId: (userId) => dispatch(actions.setUserId(userId)),
     setTitle: (title) => dispatch(actions.setTitle(title)),
     setCompleted: (completed) => dispatch(actions.setCompleted(completed)),
-    deleteTask: (idTask) => dispatch(actions.deleteTask(idTask))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(function Task(props) {
-    const { task, setTitle, setCompleted, deleteTask,textButton,func } = props;
+    const { task, setTitle, setCompleted,textButton,func } = props;
     
     return (
         <>
@@ -28,7 +27,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(function Task(props)
                             onChange={(e) => setCompleted(e.target.checked)}></input>
                     </div>
                     <button type="button" style={{ margin: '1vh' }} className="btn btn-info"
-                        disabled={task.title === ''} onClick={(e) => func(task)}>{textButton}</button>
+                        disabled={task.title === ''} onClick={(e) => func(task)} data-dismiss="modal">{textButton}</button>
                 </div>
         </>
     )

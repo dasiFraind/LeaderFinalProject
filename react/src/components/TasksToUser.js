@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { actions } from '../Redux/Store/actions';
-import { Link,withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import Task from './Task'
 function mapStateToProps(state) {
     return {
@@ -17,25 +17,24 @@ const mapDispatchToProps = (dispatch) => ({
     setTaskInArr: (task) => dispatch(actions.setTaskInArr(task))
 })
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(function Tasks(props) {
-    const { user, task, addTask, setTask, deleteTask, setTasks, setTaskInArr,history } = props;
+    const { user, task, addTask, setTask, deleteTask, setTasks, setTaskInArr, history } = props;
     useEffect(() => {
-        let token = localStorage.getItem('user');
-        console.log("token: ", token)
         fetch(`http://localhost:3001/getTasksToUser/${user.id}`, {
             method: "get",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization":token
+                "Authorization": localStorage.getItem('user')
             },
         })
-            .then((res) => {
-                console.log(res.status);
+            .then(res => {
                 if (res.status === 401)
-                history.push('/error');
-                res.json()
+                    history.push('/error');
+                else
+                    return res.json()
             })
             .then((data) => {
-                setTasks(data.user.tasks);
+                console.log("data: ", data)
+                setTasks(data.user);
             })
             .catch(err => {
                 console.log("Error");
@@ -46,41 +45,67 @@ export default withRouter(connect(mapStateToProps, mapDispatchToProps)(function 
         let data = { userId: user.id, task: task };
         fetch(`http://localhost:3001/addTask`, {
             method: "post",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": localStorage.getItem('user')
+            },
             body: JSON.stringify(data)
         })
-            .then(res => res.json())
+            .then(res => {
+                if (res.status === 401)
+                    history.push('/error');
+                else
+                    return res.json()
+            })
             .then((res) => {
-                addTask(task);
+                console.log(res.task)
+                addTask(res.task);
                 alert("The task was successfully added");
-                console.log(res.data);
             })
             .catch(err => console.log(err))
     }
     function deleteTaskFunc(x) {
         fetch(`http://localhost:3001/deleteTask/${x._id}/${user.id}`, {
             method: "delete",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": localStorage.getItem('user')
+            },
         })
-            .then(res => res.json())
+            .then(res => {
+                if (res.status === 401)
+                    history.push('/error');
+                else
+                    return res.json()
+            })
             .then((res) => {
-                deleteTask(x._id);
-                alert("The task was successfully deleted");
-                console.log(res);
+                if (res !== undefined) {
+                    deleteTask(x._id);
+                    alert("The task was successfully deleted");
+                }
             })
             .catch(err => console.log(err))
     }
     function updateTaskFunc() {
         fetch(`http://localhost:3001/updateTask/${task._id}`, {
             method: "put",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": localStorage.getItem('user')
+            },
             body: JSON.stringify(task)
         })
-            .then(res => res.json())
+            .then(res => {
+                if (res.status === 401)
+                    history.push('/error');
+                else
+                    return res.json()
+            })
             .then((res) => {
-                setTaskInArr(task);
-                alert("The task was successfully setted");
-                console.log(res.task);
+                if (res !== undefined) {
+                    setTaskInArr(task);
+                    alert("The task was successfully setted");
+                }
             })
             .catch(err => console.log(err))
     }

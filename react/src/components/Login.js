@@ -23,17 +23,20 @@ export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         })
-            .then(res => res.json())
+            .then(res => {
+                if (res.status === 404)
+                    alert("User not found :(")
+                else return res.json()
+            }
+            )
             .then((user) => {
                 setId(user.user._id);
                 setTasks(user.user.tasks);
-                localStorage.setItem('user','Bearer '+user.token)
-                console.log(typeof(user.token) );
+                localStorage.setItem('user', 'Bearer ' + user.token);
                 history.push('/tasks');
             })
             .catch(err => {
-                console.log("Error");
-                alert("User not found :(")
+                console.log("error: ", err)
             }
             )
     }

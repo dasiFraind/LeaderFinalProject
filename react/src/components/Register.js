@@ -25,9 +25,9 @@ export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))
         })
             .then(res => res.json())
             .then((data) => {
+                debugger
                 setId(data.user._id);
-                localStorage.setItem('user',data.token)
-                console.log("token: ",data.token," user: ",data.user);
+                localStorage.setItem('user','Bearer '+data.token)
                 history.push('/tasks');
             })
             .catch(err => console.log(err))
